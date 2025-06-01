@@ -1,13 +1,13 @@
-import { LoaderPinwheel } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getPokemons } from "../api";
 import {
   Cards,
+  Loader,
   LoadMoreButton,
-  OverLayer,
   PageLayout,
   SearchField,
 } from "../components";
+import { PageTitle } from "../components/layout";
 import { useListContext } from "../context/ListContext";
 
 const CARDS_PER_PAGE = 12;
@@ -36,6 +36,15 @@ export function PokemonListPage() {
   const hasNext = !!next;
   const hasData = filteredData.length > 0;
 
+  /**
+   * Função para carregar os Pokémons com base no limite e deslocamento fornecidos.
+   * Ela define o estado de carregamento como verdadeiro, busca os Pokémons
+   * e, em seguida, atualiza os estados de dados e dados filtrados com os resultados.
+   * @param {Object} params - Parâmetros de busca.
+   * @param {number} params.limit - O número máximo de Pokémons a serem carregados.
+   * @param {number} params.offset - O deslocamento para a busca de Pokémons.
+   * @returns {Promise<void>}
+   */
   const loadPokemons = useCallback(
     async ({ limit, offset } = {}) => {
       setIsLoading(true);
@@ -47,28 +56,47 @@ export function PokemonListPage() {
       setNext(result.nextPage);
       setIsLoading(false);
     },
-    [setData, setFilteredData, setIsLoading, setNext]
+    [setData, setFilteredData, setIsLoading, setNext],
   );
 
+  /**
+   * Função para filtrar os Pokémons com base no termo de busca fornecido.
+   * Ela atualiza o estado de dados filtrados com os Pokémons que correspondem
+   * ao termo de busca, ignorando maiúsculas e minúsculas.
+   * @param {string} term - O termo de busca para filtrar os Pokémons.
+   * @returns {void}
+   */
   const handleSearch = useCallback(
     (term) => {
       setFilteredData(() => {
         if (!term) return data;
 
         return data.filter((pokemon) =>
-          pokemon.name.toLowerCase().includes(term.toLowerCase())
+          pokemon.name.toLowerCase().includes(term.toLowerCase()),
         );
       });
     },
-    [data, setFilteredData]
+    [data, setFilteredData],
   );
 
+  /**
+   * Função para carregar mais Pokémons quando o botão "Carregar Mais" é clicado.
+   * Ela calcula o novo deslocamento, chama a função `loadPokemons` com o novo
+   * deslocamento e atualiza o estado de deslocamento.
+   * @returns {void}
+   */
   const handleLoadMore = useCallback(() => {
     const newOffset = offset + CARDS_PER_PAGE;
     loadPokemons({ limit: CARDS_PER_PAGE, offset: newOffset });
     setOffset(newOffset);
   }, [loadPokemons, offset, setOffset]);
 
+  /**
+   * Efeito colateral que é executado quando o componente é montado.
+   * Ele verifica se é a primeira renderização e se não há dados carregados.
+   * Se for o caso, ele chama a função `loadPokemons` para carregar os Pokémons
+   * iniciais com o limite e deslocamento definidos.
+   */
   useEffect(() => {
     if (firstRender.current && data.length === 0) {
       firstRender.current = false;
@@ -78,12 +106,9 @@ export function PokemonListPage() {
 
   return (
     <PageLayout>
-      <OverLayer isVisible={isLoading}>
-        <div className="flex gap-4">
-          <LoaderPinwheel className="w-16 h-16 text-amber-200 animate-spin" />
-          loading...
-        </div>
-      </OverLayer>
+      <Loader isVisible={isLoading} />
+
+      <PageTitle>Pokémons</PageTitle>
 
       <SearchField
         placeholder="Search for pokemons that are already listed below"

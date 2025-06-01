@@ -1,15 +1,16 @@
-import { LoaderPinwheel } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getPokemonById } from "../api";
 import {
   BackButton,
   FavoriteButton,
-  OverLayer,
+  Loader,
   PageLayout,
+  PokemonFeatures,
   PokemonStats,
+  PokemonTypes,
 } from "../components";
-import { Tag } from "../components/Tag";
+import { PageTitle } from "../components/layout";
 import { useFavoriteContext } from "../context/FavoriteContext";
 import { useListContext } from "../context/ListContext";
 
@@ -29,6 +30,13 @@ export function PokemonDetailsPage() {
   const { isFavorite, addToFavorites, removeFromFavorites } =
     useFavoriteContext();
 
+  /**
+   * Função para carregar os dados de um Pokémon pelo ID.
+   * Ela define o estado de carregamento como verdadeiro, busca os dados do Pokémon
+   * e, em seguida, define o estado de carregamento como falso.
+   * @param {number} id - O ID do Pokémon a ser carregado.
+   * @returns {Promise<void>}
+   */
   const loadPokemonById = useCallback(async (id) => {
     setIsLoading(true);
     const data = await getPokemonById({ id, delay: 750 });
@@ -36,10 +44,23 @@ export function PokemonDetailsPage() {
     setIsLoading(false);
   }, []);
 
+  /**
+   * Função para alternar o estado de favorito do Pokémon.
+   * Se o Pokémon já for favorito, ele é removido dos favoritos;
+   * caso contrário, ele é adicionado aos favoritos.
+   * @returns {void}
+   */
   const toggleFavorite = useCallback(() => {
     isFavorite(data.id) ? removeFromFavorites(data.id) : addToFavorites(data);
   }, [addToFavorites, data, isFavorite, removeFromFavorites]);
 
+  /**
+   * Efeito colateral que é executado quando o componente é montado ou quando
+   * o ID do Pokémon muda. Ele verifica se os dados do Pokémon já estão
+   * em cache. Se estiverem, ele define os dados no estado; caso contrário,
+   * ele chama a função `loadPokemonById` para buscar os dados do Pokémon.
+   * @returns {void}
+   */
   useEffect(() => {
     const pokemon = cachedData.find((p) => p.id === parseInt(id, 10));
 
@@ -53,17 +74,14 @@ export function PokemonDetailsPage() {
 
   return (
     <PageLayout>
-      <OverLayer isVisible={isLoading}>
-        <div className="flex gap-4">
-          <LoaderPinwheel className="w-16 h-16 text-amber-200 animate-spin" />
-          loading...
-        </div>
-      </OverLayer>
+      <Loader isVisible={isLoading} />
 
       {data && !isLoading && (
-        <div className="justify-between max-w-[1200px] mx-auto px-2 flex flex-col items-center gap-8">
-          <div className="flex justify-between items-center w-full">
-            <BackButton to="/" />
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-8 px-2">
+          <PageTitle>Details</PageTitle>
+
+          <div className="flex w-full items-center justify-between">
+            <BackButton to="/">Go to list</BackButton>
 
             <FavoriteButton
               isFavorite={isFavorite(data.id)}
@@ -71,38 +89,17 @@ export function PokemonDetailsPage() {
             />
           </div>
 
-          <div className="flex flex-col items-center gap-4 bg-slate-950 p-6 rounded-xl shadow-lg shadow-amber-200 w-full">
-            <h1 className="text-5xl font-bold">{data.name}</h1>
+          <div className="flex w-full flex-col items-center gap-4 rounded-xl bg-slate-950 p-6 shadow-lg shadow-amber-200">
+            <h2 className="text-5xl font-bold">{data.name}</h2>
 
             <img
               src={data.sprites.mainImage}
               alt={data.name}
-              className="w-full h-auto max-w-xs"
+              className="h-auto w-full max-w-xs"
             />
 
-            <ul className="flex gap-4">
-              {data.height && (
-                <li>
-                  <Tag>Height: {data.height}</Tag>
-                </li>
-              )}
-              {data.weight && (
-                <li>
-                  <Tag>Weight: {data.weight}</Tag>
-                </li>
-              )}
-              {data.base_experience && (
-                <li>
-                  <Tag>Base Experience: {data.base_experience}</Tag>
-                </li>
-              )}
-              {data.types.map((type) => (
-                <li key={type}>
-                  <Tag>{type}</Tag>
-                </li>
-              ))}
-            </ul>
-
+            <PokemonTypes types={data.types} />
+            <PokemonFeatures pokemon={data} />
             <PokemonStats stats={data.stats} />
           </div>
         </div>

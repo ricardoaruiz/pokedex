@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Card } from "./Card";
+import { CardsNotFound } from "./CardsNotFound";
 
 /**
  * Esse componente é responsável por renderizar uma lista de cartões de Pokémon.
@@ -11,33 +12,15 @@ import { Card } from "./Card";
  * @returns {JSX.Element}
  */
 export function Cards({ data, isLoading, showEmptyDescription = true }) {
-  if (!isLoading && (!data || data.length === 0)) {
-    return (
-      <div className="text-center text-2xl font-bold flex flex-col items-center justify-center gap-4">
-        <h2>No Pokémon found.</h2>
-
-        {showEmptyDescription && (
-          <div className="text-base">
-            <p>
-              Remember that the filter will only search for pokemons that have
-              already been loaded into the list!
-            </p>
-          </div>
-        )}
-      </div>
-    );
+  const showNoData = !isLoading && (!data || data.length === 0);
+  if (showNoData) {
+    return <CardsNotFound showEmptyDescription={showEmptyDescription} />;
   }
 
   return (
-    <div
-      className="
-          container mx-auto max-w-[1150px]
-          grid justify-items-center gap-10
-          grid-cols-1 md:grid-cols-2 lg:grid-cols-3
-        "
-    >
+    <div className="container mx-auto grid max-w-[1150px] grid-cols-1 justify-items-center gap-10 md:grid-cols-2 lg:grid-cols-3">
       {data.map((pokemon) => (
-        <Link key={pokemon.id} to={`/${pokemon.id}`} className="w-full">
+        <Link key={pokemon.id} to={`/pokemon/${pokemon.id}`} className="w-full">
           <Card pokemon={pokemon} />
         </Link>
       ))}

@@ -1,16 +1,19 @@
-import { BackButton, Cards, PageLayout } from "../components";
+import { Cards, PageLayout } from "../components";
+import { PageTitle } from "../components/layout";
 import { useFavoriteContext } from "../context/FavoriteContext";
 
+/**
+ * Esse componente é responsável por renderizar a página de Pokémons favoritos.
+ * Ele utiliza o contexto de favoritos para acessar os dados dos Pokémons
+ * que foram marcados como favoritos e exibe esses dados em um layout de página.
+ * @returns {JSX.Element}
+ */
 export function PokemonFavoritesPage() {
   const { favorites } = useFavoriteContext();
+
   return (
     <PageLayout>
-      <div className="w-full max-w-[1200px] mx-auto px-2 flex flex-col gap-8 ">
-        <BackButton to="/" />
-      </div>
-      <h2 className="text-3xl/relaxed font-bold text-center">
-        Your favorites Pokemons!
-      </h2>
+      <PageTitle>My favorites Pokemons!</PageTitle>
       <Cards data={favorites} isLoading={false} showEmptyDescription={false} />
     </PageLayout>
   );

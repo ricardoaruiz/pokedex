@@ -15,8 +15,21 @@ export function SearchField({ className, onSearch, ...props }) {
   const [value, setValue] = useState("");
   const debouncedValue = useDebounce(value, 500);
 
+  /**
+   *  Esse manipulador de eventos é responsável por atualizar o estado
+   *  do campo de busca sempre que o usuário digita algo. Ele extrai o valor
+   *  do evento de mudança e o define no estado `value`, que é usado para
+   *  renderizar o campo de entrada.
+   *  Ele é chamado sempre que o usuário altera o valor do campo de busca.
+   * @param {*} event
+   * @returns  {void}
+   */
   const handleChange = (event) => setValue(event.target.value);
 
+  /**
+   * Esse efeito é responsável por chamar a função `onSearch` com o valor de busca
+   * apos um atraso de 500ms, permitindo uma busca mais eficiente.
+   */
   useEffect(() => {
     onSearch(debouncedValue);
   }, [debouncedValue, onSearch]);
@@ -25,10 +38,10 @@ export function SearchField({ className, onSearch, ...props }) {
     <input
       type="search"
       className={cn(
-        "bg-slate-950 px-3 py-4 rounded-lg text-xl font-bold",
-        "outline-0 focus:ring-2 focus:ring-amber-200 transition-all duration-200 shadow-xl",
-        "hover:shadow-amber-200 hover:shadow-md cursor-pointer",
-        className
+        "rounded-lg bg-slate-950 px-3 py-4 text-xl font-bold",
+        "shadow-xl outline-0 transition-all duration-200 focus:ring-2 focus:ring-amber-200",
+        "cursor-pointer hover:shadow-md hover:shadow-amber-200",
+        className,
       )}
       value={value}
       onChange={handleChange}

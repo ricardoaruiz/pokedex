@@ -6,7 +6,7 @@
  */
 export function Container({ children }) {
   return (
-    <div className="relative px-4 py-5 flex flex-col items-center gap-15">
+    <div className="relative flex flex-col items-center gap-15 px-4 py-5">
       {children}
     </div>
   );

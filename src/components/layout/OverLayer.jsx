@@ -1,4 +1,4 @@
-import { cn } from "../utils";
+import { cn } from "../../utils";
 
 /**
  * Esse componente é responsável por renderizar uma camada de sobreposição.
@@ -17,7 +17,7 @@ export function OverLayer({ children, isVisible }) {
   return (
     <div
       className={cn(
-        "fixed top-0 bottom-0 z-30 w-full flex items-center text-6xl text-white justify-center bg-slate-900 opacity-80"
+        "fixed top-0 bottom-0 z-30 flex w-full items-center justify-center bg-slate-900 text-6xl text-white opacity-80",
       )}
     >
       {children}
