@@ -22,7 +22,7 @@ export function CardsNotFound({ showEmptyDescription = true }) {
       )}
 
       <img
-        src="/public/not-found.png"
+        src="/not-found.png"
         alt="Not Found"
         className="w-[300px] md:w-[500px]"
       />
