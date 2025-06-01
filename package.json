@@ -1,5 +1,9 @@
 {
   "name": "pokemon",
+  "author": {
+    "name": "Guilherme Carvalho Ruiz",
+    "email": "guilherme.carvalho.ruiz@gmail.com"
+  },
   "private": true,
   "version": "0.0.0",
   "type": "module",
