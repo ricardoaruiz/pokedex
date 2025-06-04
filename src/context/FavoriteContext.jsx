@@ -1,7 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const FavoriteContext = createContext();
+
+const FAVORITES_KEY = "favorites";
 
 /**
  * Esse e o contexto responsável por gerenciar o estado dos Pokémons favoritos.
@@ -12,6 +14,13 @@ const FavoriteContext = createContext();
  */
 export const FavoriteProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
+
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem(FAVORITES_KEY);
+    if (storedFavorites) {
+      setFavorites(JSON.parse(storedFavorites));
+    }
+  }, []);
 
   /**
    * Essa função adiciona um Pokémon à lista de favoritos.
@@ -25,7 +34,11 @@ export const FavoriteProvider = ({ children }) => {
    * @param {*} pokemon
    */
   const addToFavorites = (pokemon) => {
-    setFavorites((prevFavorites) => [...prevFavorites, pokemon]);
+    setFavorites((prevFavorites) => {
+      const newFavorites = [...prevFavorites, pokemon];
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
+      return newFavorites;
+    });
   };
 
   /**
@@ -40,9 +53,13 @@ export const FavoriteProvider = ({ children }) => {
    * @param {*} pokemonId
    */
   const removeFromFavorites = (pokemonId) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.filter((pokemon) => pokemon.id !== pokemonId),
-    );
+    setFavorites((prevFavorites) => {
+      const newFavorites = prevFavorites.filter(
+        (pokemon) => pokemon.id !== pokemonId,
+      );
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
+      return newFavorites;
+    });
   };
 
   /**
